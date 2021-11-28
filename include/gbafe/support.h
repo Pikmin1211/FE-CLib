@@ -24,6 +24,8 @@ struct SupportData
 	/* 15 */ u8 supportCount;
 };
 
+typedef struct SupportBonuses SupportBonuses;
+
 struct SupportBonuses
 {
 	/* 00 */ u8 affinity;

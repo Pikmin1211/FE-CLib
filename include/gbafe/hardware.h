@@ -1,7 +1,7 @@
 #ifndef GBAFE_HARDWARE_H
 #define GBAFE_HARDWARE_H
 
-#include "gba/gba.h"
+//#include "gba/gba.h"
 
 #include "common.h"
 #include "proc.h"

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "item.h"
 #include "common.h"
 
 typedef struct Unit Unit;
@@ -14,6 +15,9 @@ typedef struct EventUnit EventUnit;
 
 typedef struct CharacterData CharacterData;
 typedef struct ClassData ClassData;
+
+typedef struct CharacterMagicData CharacterMagicData;
+typedef struct ClassMagicData ClassMagicData;
 
 struct SMSHandle;
 struct SupportData;
@@ -78,6 +82,11 @@ struct CharacterData {
 	/* 30 */ void* pUnk30;
 };
 
+struct CharacterMagicData {
+	/* 00 */ s8 baseMag;
+	/* 01 */ s8 growthMag;
+};
+
 struct ClassData {
 	/* 00 */ u16 nameTextId;
 	/* 02 */ u16 descTextId;
@@ -136,6 +145,13 @@ struct ClassData {
 	/* 50 */ const void* pUnk50;
 };
 
+struct ClassMagicData {
+	/* 00 */ s8 baseMag;
+	/* 01 */ s8 growthMag;
+	/* 02 */ s8 maxMag;
+	/* 03 */ u8 promotionMag; 
+};
+
 struct Unit {
 	/* 00 */ const struct CharacterData* pCharacterData;
 	/* 04 */ const struct ClassData* pClassData;
@@ -144,7 +160,7 @@ struct Unit {
 	/* 09 */ u8 exp;
 	/* 0A */ u8 aiFlag;
 
-	/* 0B */ s8 index;
+	/* 0B */ u8 index;
 
 	/* 0C */ u32 state;
 
@@ -165,7 +181,7 @@ struct Unit {
 	/* 1C */ u8 ballistaIndex;
 	/* 1D */ s8 movBonus;
 
-	/* 1E */ u16 items[UNIT_ITEM_COUNT];
+	/* 1E */ Item items[UNIT_ITEM_COUNT];
 	/* 28 */ u8 ranks[8];
 
 	/* 30 */ u8 statusIndex : 4;
@@ -177,8 +193,8 @@ struct Unit {
 	/* 32 */ u8 supports[6];
 	/* 38 */ u8 unitLeader;
 	/* 39 */ u8 supportBits;
-	/* 3A */ u8 unk3A;
-	/* 3B */ u8 unk3B;
+	/* 3A */ s8 mag;
+	/* 3B */ u8 fatigue;
 
 	/* 3C */ struct SMSHandle* pMapSpriteHandle;
 
@@ -253,11 +269,11 @@ enum {
 	US_BIT24 = (1 << 24),
 	US_BIT25 = (1 << 25),
 	US_BIT26 = (1 << 26),
-	// = (1 << 27),
-	// = (1 << 28),
-	// = (1 << 29),
-	// = (1 << 30),
-	// = (1 << 31),
+	US_BIT27 = (1 << 27),
+	US_BIT28 = (1 << 28),
+	US_BIT29 = (1 << 29),
+	US_CAPTURE = (1 << 30),
+	US_UNEQUIPMENT = (1 << 31),
 
 	// Helpers
 	US_UNAVAILABLE = (US_DEAD | US_NOT_DEPLOYED | US_BIT16),
@@ -375,6 +391,9 @@ enum {
 extern const struct CharacterData gCharacterData[];
 extern const struct ClassData gClassData[];
 
+extern const struct ClassMagicData MagClassTable[];
+extern const struct CharacterMagicData MagCharTable[];
+
 extern struct Unit gUnitArrayBlue[]; //! FE8U = 0x202BE4C
 extern struct Unit* gActiveUnit; //! FE8U = 0x3004E50
 extern struct Unit* const gUnitLookup[]; //! FE8U = 0x859A5D0
@@ -395,11 +414,11 @@ void SetUnitStatusExt(struct Unit*, int status, int duration); //! FE8U = 0x8017
 
 int GetUnitSMSId(const struct Unit*); //! FE8U = 0x8017905
 
-int UnitAddItem(struct Unit*, u16); //! FE8U = 0x8017949
+int UnitAddItem(struct Unit*, Item item); //! FE8U = 0x8017949
 void ClearUnitInventory(struct Unit*); //! FE8U = 0x801796D
 void UnitRemoveInvalidItems(struct Unit*); //! FE8U = 0x8017985
 int GetUnitItemCount(const struct Unit*); //! FE8U = 0x80179D9
-int UnitHasItem(const struct Unit*, u16); //! FE8U = 0x80179F9
+int UnitHasItem(const struct Unit*, Item item); //! FE8U = 0x80179F9
 
 int LoadUnits(const struct UnitDefinition[]); //! FE8U = 0x8017A35
 int CanClassWieldWeaponType(u8); //! FE8U = 0x8017A8D
@@ -469,6 +488,8 @@ int GetUnitPortraitId(const struct Unit*); //! FE8U = 0x80192B9
 int GetUnitMiniPortraitId(const struct Unit*); //! FE8U = 0x80192F5
 u8 GetUnitLeaderCharId(const struct Unit*); //! FE8U = 0x8019341
 
+int GetUnitMove(const struct Unit*); //! FE8U = 0x8019224
+
 void SetUnitHp(struct Unit*, int); //! FE8U = 0x8019369
 void AddUnitHp(struct Unit*, int); //! FE8U = 0x80193A5
 
@@ -483,5 +504,28 @@ const struct CharacterData* GetCharacterData(u8); //! FE8U = 0x8019465
 void UnitRemoveItem(struct Unit*, int slot); //! FE8U = 0x8019485
 
 int CanUnitCrossTerrain(const struct Unit*, u8 terrain); //! FE8U = 0x801949D
+
+int CanUnitUseWeapon(const struct Unit*, Item item); //! FE8U = (0x08016574+1)
+int CanUnitUseWeaponNow(const struct Unit*, Item item); //! FE8U = (0x08016750+1)
+
+int CanUnitUseStaff(const struct Unit*, Item item); //! FE8U = (0x080167A4+1)
+int CanUnitUseStaffNow(const struct Unit*, Item item); //! FE8U = (0x08016800+1)
+
+Item GetUnitEquippedWeapon(const struct Unit*); //! FE8U = (0x08016B28+1)
+int GetUnitEquippedWeaponSlot(const struct Unit*); //! FE8U = (0x08016B58+1)
+
+void EquipUnitItemSlot(struct Unit*, int slot); //! FE8U = (0x08016BC0+1)
+
+int IsItemEffectiveAgainst(Item item, const struct Unit*); //! FE8U = (0x08016BEC+1)
+
+int IsItemDisplayUsable(const struct Unit*, Item item); //! FE8U = 0x8016EE5
+int CanUnitUse_unused(const struct Unit*, Item item); //! FE8U = 0x8016F7D
+int GetUnitItemHealAmount(const struct Unit*, Item item); //! FE8U = 0x8016FB9
+int GetUnitItemSlot(const struct Unit*, Item item); //! FE8U = 0x801702D
+
+u32 GetUnitWeaponReachBits(const struct Unit*, int slot); //! FE8U = 0x80171E9
+u32 GetUnitStaffReachBits(const struct Unit*); //! FE8U = 0x80172F9
+
+s8 IsItemUnsealedForUnit(struct Unit* unit, Item item);
 
 #endif // GBAFE_UNIT_H

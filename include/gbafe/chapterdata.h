@@ -20,7 +20,10 @@ struct ROMChapterData {
 	/* 0C */ u8  initialFogLevel;
 	/* 0D */ u8  _unk0D;
 
-	/* 0E */ u8 _unk10[0x12 - 0x0E];
+	/* 0E */ u8 chapterTitleImage;
+	/* 0F */ u8 chapterTitleImage2; // FE7?
+	/* 10 */ u8 mapInitialX;
+	/* 11 */ u8 mapInitialY;
 
 	/* 12 */ u8 initialWeather;
 	/* 13 */ u8 battleTileSet;
@@ -34,12 +37,14 @@ struct ROMChapterData {
 	// 6 for blue/green alt, 7 for red alt
 	/* 16 */ u16 mapSongIndices[8];
 
-	/* 26 */ u8 _unk26[0x2C - 0x26];
+	/* 26 */ u8 _unk26[0x2C - 0x26]; 
 
 	/* 2C */ u8 mapCrackedWallHeath;
 
-	/* 2D */ u8 _unk2D[0x70 - 0x2D];
-	/* 70 */ u32 unk70;
+	/* 2D */ u8 _unk2D[0x70 - 0x2D]; // FE7 evaluation data
+
+	/* 70 */ u16 mapNameTextId;
+	/* 72 */ u16 mapNameTextId2; // unused (from FE7?)
 
 	/* 74 */ u8 mapEventDataId;
 	/* 75 */ u8 gmapEventId;

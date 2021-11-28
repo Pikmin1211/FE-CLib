@@ -50,6 +50,12 @@ int ApplyUnitAction(struct Proc*); //! FE8U = 0x801849D
 void DisplayMoveRangeGraphics(unsigned param); //! FE8U = 0x801DA99
 void HideMoveRangeGraphics(void); //! FE8U = 0x801DACD
 
+// For DisplayMoveRangeGraphics
+#define MOVE_RANGE_GRAPHICS_MOVE_BLUE 	(1<<0)
+#define MOVE_RANGE_GRAPHICS_RED 		(1<<1)
+#define MOVE_RANGE_GRAPHICS_GREEN 		(1<<2)
+#define MOVE_RANGE_GRAPHICS_BLUE 		(1<<3)
+
 void StartBMXFADE(int locking); //! FE8U = (0x0801DDC4+1)
 void StartBlockingBMXFADE(int locking, struct Proc* parent); //! FE8U = (0x0801DDF0+1)
 

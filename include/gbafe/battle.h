@@ -16,11 +16,15 @@ enum {
 	BATTLE_MAX_DAMAGE = 127,
 };
 
+typedef struct BattleStats BattleStats;
+typedef struct BattleHit BattleHit;
+typedef struct ChangeMovCon ChangeMovCon;
+
 struct BattleUnit {
 	/* 00 */ struct Unit unit;
 
-	/* 48 */ u16 weapon;
-	/* 4A */ u16 weaponBefore;
+	/* 48 */ Item weapon;
+	/* 4A */ Item weaponBefore;
 	/* 4C */ u32 weaponAttributes;
 	/* 50 */ u8 weaponType;
 	/* 51 */ u8 weaponSlotIndex;
@@ -34,7 +38,8 @@ struct BattleUnit {
 	/* 56 */ s8 terrainDefense;
 	/* 57 */ s8 terrainAvoid;
 	/* 58 */ s8 terrainResistance;
-	/* 59 */ /* pad */
+	/* 59 */ signed changeMov : 4;
+	/* 59 */ signed changeCon : 4;
 
 	/* 5A */ short battleAttack;
 	/* 5C */ short battleDefense;
@@ -61,14 +66,14 @@ struct BattleUnit {
 	/* 77 */ s8 changeDef;
 	/* 78 */ s8 changeRes;
 	/* 79 */ s8 changeLck;
-	/* 7A */ s8 changeCon;
+	/* 7A */ s8 changeMag;
 
 	/* 7B */ s8 wexpMultiplier;
 	/* 7C */ s8 nonZeroDamage;
 	/* 7D */ s8 weaponBroke;
 
-	/* 7E */ s8 hasItemEffectTarget;
-	/* 7F */ /* pad */
+	/* 7E */ u8 attacksMade;
+	/* 7F */ u8 hitsTaken;
 };
 
 struct BattleStats {
